@@ -2,14 +2,10 @@
 
 ## Newspapers
 
-### Tabloids
-
-- The Sun
-
-### Broadsheet
-
-- The Guardian
-- The Times
+Newspaper | The Sun | The Guardian | The Times
+--- | --- | --- | --- 
+type | tabloid | broadsheet | broadsheet
+articles collected | 2200 | 2883 | 999
 
 ## Crawlers
 
