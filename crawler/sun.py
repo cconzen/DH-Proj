@@ -15,7 +15,7 @@ class SunSpider(scrapy.Spider):
         start_urls.append(f"https://www.thesun.co.uk/page/{i}/?s=qatar+world+cup%2F")
 
     try:
-        os.remove("sun_hreflist.txt")
+        os.remove("sun_hrefList.txt")
     except OSError:
         pass
 
@@ -33,7 +33,7 @@ class SunSpider(scrapy.Spider):
         article_links = sel.css("a.teaser-anchor--search::attr(href)").getall()
 
         for link in article_links:
-            with io.open("sun_hreflist.txt", "a", encoding="utf8") as file:
+            with io.open("sun_hrefList.txt", "a", encoding="utf8") as file:
                 file.write(link + "\n")
             yield scrapy.Request(link, callback=self.parse_article)
 
