@@ -15,11 +15,13 @@ df = pd.read_json('sun_articles.json')
 content = df.loc[:, "content"]
 
 df['sentences'] = df['content'].apply(lambda x: nltk.sent_tokenize(x))
-# Tokenize each document into words and remove non-alphanumeric tokens
-df['tokens'] = df['content'].apply(lambda x: [word.lower() for word in word_tokenize(x) if word.isalnum()])
+# Tokenize each document into words and remove punctuation
+df['tokens'] = df['content'].apply(lambda x: [word.lower() for word in word_tokenize(x) if word not in punctuation])
 # Remove stopwords
 stopwords_list = stopwords.words('english')
 df['tokens'] = df['tokens'].apply(lambda x: [word for word in x if word not in stopwords_list])
+# Remove symbols
+df['tokens'] = df['tokens'].apply(lambda x: [word for word in x if word.isalpha()])
 
 
 df['pos_tags'] = df['tokens'].apply(lambda x: nltk.pos_tag(x))
