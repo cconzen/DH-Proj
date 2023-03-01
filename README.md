@@ -27,4 +27,17 @@ Guardian API + BeautifulSoup4 to clean body html
 
 run script in .py file
 
+## Analysis
+
+vocabulary comparison
+Topic modelling
+cooccurrence measures
+
+in rStudio
+
+## Visualisation
+
+
+
+
 
