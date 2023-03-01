@@ -8,6 +8,7 @@ type | tabloid | broadsheet | broadsheet
 timespan | a year | a year | a year 
 articles collected | 2200 | 2883 | 999
 mean article length | 133 tokens | 1476 tokens | 448 tokens 
+vocabulary | 22403 lemmas | 49337 lemmas | 9866 lemmas
 complete articles | yes | yes | no
 tokens complete | 994494 | 4253975 | 133208
 without stopwords | 556366 | 2420775 | 74849
