@@ -7,9 +7,10 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 import pandas as pd
 import os
 import json
+from collections import Counter
 
 
-def preprocess(newspaper="sun"):
+def preprocess(newspaper, csv=False):
     """
         Preprocesses text data from JSON files for three different newspapers (The Times, The Sun, and The Guardian),
         including tokenisation, removal of stopwords and punctuation, part-of-speech tagging, and lemmatisation.
@@ -39,14 +40,19 @@ def preprocess(newspaper="sun"):
         raise ValueError('newspaper argument must be one of "times", "sun", or "guardian"')
 
     if newspaper == "times":
+        print("starting preprocessing newspaper 'The Times'.")
         df = pd.read_json('times_articles.json')
+        print("transformed JSON to dataframe.")
         # content = df.loc[:, "content"]
 
     elif newspaper == "sun":
+        print("starting preprocessing newspaper 'The Sun'.")
         df = pd.read_json('sun_articles.json')
+        print("transformed JSON to dataframe.")
         # content = df.loc[:, "content"]
 
     elif newspaper == "guardian":
+        print("starting preprocessing newspaper 'The Guardian'.")
         # for the guardian
         # Create an empty list to store the contents of each JSON file
         json_data = []
@@ -76,28 +82,58 @@ def preprocess(newspaper="sun"):
         # print the JSON string
         # print(json_string)
         df = pd.DataFrame(new_dict_list)
+        print("transformed JSON to dataframe.")
 
     else:
         raise ValueError('Input newspaper is not processable')
 
     # preprocessing starts here
     df['sentences'] = df['content'].apply(lambda x: nltk.sent_tokenize(x))
+    print("tokenised into sentences.")
     # Tokenize each document into words and remove punctuation
     df['tokens'] = df['content'].apply(lambda x: [word.lower() for word in word_tokenize(x) if word not in punctuation])
+    print("tokenised into words.")
+    print(f"numbers of tokens: {len(df['tokens'].explode())}")
     # Remove stopwords
     stopwords_list = stopwords.words('english')
     df['tokens'] = df['tokens'].apply(lambda x: [word for word in x if word not in stopwords_list])
+    print("removed stopwords.")
+    print(f"numbers of tokens: {len(df['tokens'].explode())}")
     # Remove symbols
     df['tokens'] = df['tokens'].apply(lambda x: [word for word in x if word.isalpha()])
-
+    print("removed symbols.")
+    print(f"numbers of tokens: {len(df['tokens'].explode())}")
     df['pos_tags'] = df['tokens'].apply(lambda x: nltk.pos_tag(x))
+    print("assigned pos tags.")
     # Lemmatise each token
     lemmatiser = WordNetLemmatizer()
     df['lemmas'] = df['tokens'].apply(lambda x: [lemmatiser.lemmatize(token) for token in x])
+    print("lemmatised tokens.")
     # Convert the list of lemmas back to text
     df['lemmatised_text'] = df['lemmas'].apply(lambda x: ' '.join(x))
+    print("rejoined text with lemmas.")
 
-    return df
+    # Get a list of all tokens
+    all_tokens = [token for doc in df['lemmas'] for token in doc]
+    # Create a Counter object to count the frequency of each token
+    token_counts = Counter(all_tokens)
+    # Get a list of tokens that appear less than 10 times
+    rare_tokens = [token for token, count in token_counts.items() if count < 10]
+    print(f"numbers of tokens appearing less than ten times: {len(rare_tokens)}")
+    # Filter out rare tokens
+    print(f"numbers of tokens: {len(df['lemmas'].explode())}")
+    df['lemmas'] = [[token for token in doc if token not in rare_tokens] for doc in df['lemmas']]
+    print("removed rare tokens.")
+    # Remove rows where there are no tokens left
+    df = df[df['lemmas'].map(len) > 0]
+    print(f"numbers of tokens: {len(df['lemmas'].explode())}")
+
+    if csv == True:
+        df.to_csv(f'{newspaper}.csv', index=False)
+
+        return print(f"Created file '{newspaper}.csv'.")
+    else:
+        return df
 
 
 def df_to_dtm(df):
@@ -153,6 +189,7 @@ def df_to_tfidf(df):
 
     return df_tfidf
 
-#dataframe = preprocess("guardian")
+#dataframe = preprocess("times")
+#print(dataframe)
 #dtm_dataframe = df_to_dtm(dataframe)
 #print(df_to_tfidf(dataframe))
