@@ -99,6 +99,12 @@ def preprocess(newspaper, csv=False):
     # Tokenize each document into words and remove punctuation
     df['tokens'] = df['content'].apply(lambda x: [word.lower() for word in word_tokenize(x) if word not in punctuation])
     print("tokenised into words.")
+
+    # df['article_length'] = df['tokens'].apply(len)
+    # Calculate the mean of the `article_length` column
+    # mean_article_length = df['article_length'].mean()
+    # print(f"Mean article length: {mean_article_length}")
+
     print(f"number of tokens: {len(df['tokens'].explode())}")
     # Remove stopwords
     stopwords_list = stopwords.words('english')
@@ -111,13 +117,19 @@ def preprocess(newspaper, csv=False):
     print(f"number of tokens: {len(df['tokens'].explode())}")
     df['pos_tags'] = df['tokens'].apply(lambda x: nltk.pos_tag(x))
     print("assigned pos tags.")
-    # Lemmatise each token
+    # lemmatise each token
     lemmatiser = WordNetLemmatizer()
     df['lemmas'] = df['tokens'].apply(lambda x: [lemmatiser.lemmatize(token) for token in x])
     print("lemmatised tokens.")
+
+    # all_tokens = [token for doc in df['lemmas'] for token in doc]
+    # Create a set to remove duplicates and get the vocabulary
+    # print(len(set(all_tokens)-set(playerlist)))
+
     print(f"number of tokens: {len(df['lemmas'].explode())}")
     df['lemmas'] = df['lemmas'].apply(lambda x: [token for token in x if token not in playerlist])
     print("removed playerlist tokens.")
+
     print(f"number of tokens: {len(df['lemmas'].explode())}")
     # Convert the list of lemmas back to text
     df['lemmatised_text'] = df['lemmas'].apply(lambda x: ' '.join(x))
