@@ -189,7 +189,13 @@ def df_to_tfidf(df):
 
     return df_tfidf
 
-#dataframe = preprocess("times")
-#print(dataframe)
-#dtm_dataframe = df_to_dtm(dataframe)
-#print(df_to_tfidf(dataframe))
+# dataframe = preprocess("times")
+# print(dataframe)
+# dtm_dataframe = df_to_dtm(dataframe)
+# print(df_to_tfidf(dataframe))
+#
+# k= df_to_tfidf(dataframe)
+# k.to_csv(f'csv files/times_df.csv', index=True)
+# print(k.head())
+
+
