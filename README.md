@@ -30,7 +30,9 @@ run script in .py file
 ## Analysis
 
 vocabulary comparison
+
 Topic modelling
+
 cooccurrence measures
 
 in rStudio
