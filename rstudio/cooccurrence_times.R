@@ -244,32 +244,5 @@ plot(
 )
 
 
-# 5 Optional exercises
-
-
-#1. Create term networks for “civil”, “germany”, “tax”
-
-# 2. For visualization, at one point we filter for all nodes with less than 2 edges. 
-# By this, the network plot gets less dense, but we loose also a lot of co-occurring 
-# terms connected only to one term. Re-draw the network without this filtering.
-
-
-#The plot may get very messy. Try lower values for numberOfCoocs to create a 
-#less dense network plot.
-
-#3. Separate the DTM into two time periods (year < 1968; year > = 1968). 
-# Represent the graph for the term “family” for both time periods. Hint: 
-# Define functions for the sub processes of creating a binary DTM from a 
-# corpus object (get_binDTM <- function(mycorpus)) and for visualizing
-# a co-occurrence network (vis_cooc_network <- function(binDTM, coocTerm)).
-
-
-
-
-
-
-
-
-
 
 
