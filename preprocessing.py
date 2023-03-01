@@ -146,5 +146,5 @@ def preprocess(newspaper, csv=False):
         return df
 
 
-dataframe = preprocess("times")
-print(dataframe)
+# dataframe = preprocess("times")
+# print(dataframe)
