@@ -1,26 +1,30 @@
 import nltk
+
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from string import punctuation
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 import pandas as pd
 import os
 import json
 from collections import Counter
 
+from get_playernames import fetch_playerlist
+
 
 def preprocess(newspaper, csv=False):
     """
         Preprocesses text data from JSON files for three different newspapers (The Times, The Sun, and The Guardian),
-        including tokenisation, removal of stopwords and punctuation, part-of-speech tagging, and lemmatisation.
+        including tokenisation, removal of stopwords, punctuation rare tokens and player names, part-of-speech tagging,
+        and lemmatisation.
         Returns a Pandas DataFrame containing the preprocessed data.
 
         Parameters:
         -----------
         newspaper : str, default="sun"
             Name of the newspaper to preprocess data for. Must be one of "times", "sun", or "guardian".
-
+        csv :  bool, default=False
+            If True, saves the resulting DataFrame to a CSV file. Defaults to False.
         Raises:
         -------
         ValueError:
@@ -87,28 +91,34 @@ def preprocess(newspaper, csv=False):
     else:
         raise ValueError('Input newspaper is not processable')
 
+    playerlist = fetch_playerlist()
+
     # preprocessing starts here
     df['sentences'] = df['content'].apply(lambda x: nltk.sent_tokenize(x))
     print("tokenised into sentences.")
     # Tokenize each document into words and remove punctuation
     df['tokens'] = df['content'].apply(lambda x: [word.lower() for word in word_tokenize(x) if word not in punctuation])
     print("tokenised into words.")
-    print(f"numbers of tokens: {len(df['tokens'].explode())}")
+    print(f"number of tokens: {len(df['tokens'].explode())}")
     # Remove stopwords
     stopwords_list = stopwords.words('english')
     df['tokens'] = df['tokens'].apply(lambda x: [word for word in x if word not in stopwords_list])
     print("removed stopwords.")
-    print(f"numbers of tokens: {len(df['tokens'].explode())}")
+    print(f"number of tokens: {len(df['tokens'].explode())}")
     # Remove symbols
     df['tokens'] = df['tokens'].apply(lambda x: [word for word in x if word.isalpha()])
     print("removed symbols.")
-    print(f"numbers of tokens: {len(df['tokens'].explode())}")
+    print(f"number of tokens: {len(df['tokens'].explode())}")
     df['pos_tags'] = df['tokens'].apply(lambda x: nltk.pos_tag(x))
     print("assigned pos tags.")
     # Lemmatise each token
     lemmatiser = WordNetLemmatizer()
     df['lemmas'] = df['tokens'].apply(lambda x: [lemmatiser.lemmatize(token) for token in x])
     print("lemmatised tokens.")
+    print(f"number of tokens: {len(df['lemmas'].explode())}")
+    df['lemmas'] = df['lemmas'].apply(lambda x: [token for token in x if token not in playerlist])
+    print("removed playerlist tokens.")
+    print(f"number of tokens: {len(df['lemmas'].explode())}")
     # Convert the list of lemmas back to text
     df['lemmatised_text'] = df['lemmas'].apply(lambda x: ' '.join(x))
     print("rejoined text with lemmas.")
@@ -119,14 +129,14 @@ def preprocess(newspaper, csv=False):
     token_counts = Counter(all_tokens)
     # Get a list of tokens that appear less than 10 times
     rare_tokens = [token for token, count in token_counts.items() if count < 10]
-    print(f"numbers of tokens appearing less than ten times: {len(rare_tokens)}")
+    print(f"number of tokens appearing less than ten times: {len(rare_tokens)}")
     # Filter out rare tokens
-    print(f"numbers of tokens: {len(df['lemmas'].explode())}")
+    print(f"number of tokens: {len(df['lemmas'].explode())}")
     df['lemmas'] = [[token for token in doc if token not in rare_tokens] for doc in df['lemmas']]
     print("removed rare tokens.")
     # Remove rows where there are no tokens left
     df = df[df['lemmas'].map(len) > 0]
-    print(f"numbers of tokens: {len(df['lemmas'].explode())}")
+    print(f"number of tokens: {len(df['lemmas'].explode())}")
 
     if csv == True:
         df.to_csv(f'{newspaper}.csv', index=False)
@@ -136,60 +146,5 @@ def preprocess(newspaper, csv=False):
         return df
 
 
-def df_to_dtm(df):
-    """
-       Convert a pandas DataFrame of preprocessed text data (obtained using preprocessing() ) into a Document-Term Matrix
-       (DTM) using a CountVectorizer.
-
-       Parameters:
-           df (pandas DataFrame): A DataFrame containing preprocessed text data, including a column named 'lemmatised_text'
-                                  containing the preprocessed text data as strings.
-
-       Returns:
-           pandas DataFrame: A DataFrame representation of the DTM with document IDs as the index and individual terms as
-                             columns. The cells of the DataFrame contain the term frequencies (counts) for each document.
-    """
-
-    # Create a CountVectorizer object
-    vectoriser = CountVectorizer()
-    dtm = vectoriser.fit_transform(df['lemmatised_text'])
-    # Create a dataframe from the DTM
-    df_dtm = pd.DataFrame(dtm.toarray(), columns=vectoriser.get_feature_names_out())
-    # Add the original text column back to the dataframe
-    df_dtm['content'] = df['content']
-
-    return df_dtm
-
-
-def df_to_tfidf(df):
-    """
-        Convert a pandas DataFrame of preprocessed text data (obtained using preprocessing() ) into a Term Frequency-Inverse
-        Document Frequency (TF-IDF) matrix using a CountVectorizer and a TfidfTransformer.
-
-        Parameters:
-            df (pandas DataFrame): A DataFrame containing preprocessed text data, including a column named 'lemmatised_text'
-                                   containing the preprocessed text data as strings.
-
-        Returns:
-            pandas DataFrame: A DataFrame representation of the TF-IDF matrix with document IDs as the index and individual
-                              terms as columns. The cells of the DataFrame contain the TF-IDF scores for each document.
-    """
-
-    vectoriser = CountVectorizer()
-    dtm = vectoriser.fit_transform(df['lemmatised_text'])
-    tfidf_transformer = TfidfTransformer()
-    tfidf = tfidf_transformer.fit_transform(dtm)
-    # Create a dataframe from the TF-IDF matrix
-    df_tfidf = pd.DataFrame(tfidf.toarray(), columns=vectoriser.get_feature_names_out())
-    df_tfidf = df_tfidf[df_tfidf.sum().sort_values(ascending=False).index]
-    # Add the original text column back to the dataframe
-    df_tfidf['content'] = df['content']
-    pd.set_option('display.max_columns', 100)
-    # Print the resulting dataframe
-
-    return df_tfidf
-
-#dataframe = preprocess("times")
-#print(dataframe)
-#dtm_dataframe = df_to_dtm(dataframe)
-#print(df_to_tfidf(dataframe))
+dataframe = preprocess("times")
+print(dataframe)
