@@ -39,6 +39,12 @@ in rStudio
 
 ## Visualisation
 
+time series
+
+grouping of sentiments 
+
+heatmaps 
+
 
 
 
