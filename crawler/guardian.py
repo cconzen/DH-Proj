@@ -32,14 +32,17 @@ if not os.path.exists("guardian_articles"):
 base_url = "https://content.guardianapis.com/"
 # parameters
 query = 'qatar%20world%20cup'
-from_date = '2022-02-22'
+from_date = '2022-09-01'
+to_date = '2023-02-28'
 page_size = 200
 show_fields = "body"
 
+json_list = []
+
 # iterating 15 times, 200 articles per page
-for page_number in range(1, 16):
+for page_number in range(1, 11):
     final_url = f"{base_url}search?page-size={page_size}&page={page_number}" \
-                f"&from-date={from_date}&q={query}&show-fields={show_fields}&api-key={api_key}"
+                f"&from-date={from_date}&to-date={to_date}&q={query}&show-fields={show_fields}&api-key={api_key}"
 
     # perform the request and print the query
     r = requests.get(url=final_url, params={})
@@ -52,5 +55,19 @@ for page_number in range(1, 16):
         Guardian['response']['results'][i]['fields']['body'] = soup_cleanse(
             Guardian['response']['results'][i]['fields']['body'])
 
-    with open(f'guardian_articles/Guardian_page_{page_number}.json', 'w') as outfile:
-        json.dump(Guardian, outfile, indent=4)
+    json_list.append(Guardian["response"]["results"])
+
+json_object = json.loads(json.dumps(json_list))
+
+new_dict_list = []
+for item in json_object:
+    for article in item:
+        new_dict = {
+            "title": article["webTitle"],
+            "date": article["webPublicationDate"],
+            "content": article["fields"]["body"]
+        }
+        new_dict_list.append(new_dict)
+
+with open("../../DH-Proj/guardian_articles.json", "w") as outfile:
+    json.dump(new_dict_list, outfile, indent=4)

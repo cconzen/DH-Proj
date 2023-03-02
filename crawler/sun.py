@@ -10,8 +10,8 @@ class SunSpider(scrapy.Spider):
     name = "sun"
     # using only one query to start with
     start_urls = ["https://www.thesun.co.uk/?s=qatar+world+cup"]
-    # all result pages ( = the last year; range 2 to 223 bc page one is differently named ^)
-    for i in range(2, 223):
+    # all result pages ( = including Sep 2022; range 2 to 128 bc page one is differently named ^)
+    for i in range(2, 128):
         start_urls.append(f"https://www.thesun.co.uk/page/{i}/?s=qatar+world+cup%2F")
 
     try:
@@ -47,7 +47,7 @@ class SunSpider(scrapy.Spider):
 
         yield {
             "title": title,
-            "author": author,
+            #"author": author,
             "date": date,
             "content": content,
         }
