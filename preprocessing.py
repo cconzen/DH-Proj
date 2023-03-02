@@ -79,10 +79,10 @@ def preprocess(newspaper, csv=False):
     df['tokens'] = df['content'].apply(lambda x: [word.lower() for word in word_tokenize(x) if word not in punctuation])
     print("tokenised into words.")
 
-    # df['article_length'] = df['tokens'].apply(len)
+    df['article_length'] = df['tokens'].apply(len)
     # Calculate the mean of the `article_length` column
-    # mean_article_length = df['article_length'].mean()
-    # print(f"Mean article length: {mean_article_length}")
+    mean_article_length = df['article_length'].mean()
+    print(f"Mean article length: {mean_article_length}")
 
     print(f"number of tokens: {len(df['tokens'].explode())}")
     # Remove stopwords
@@ -101,9 +101,9 @@ def preprocess(newspaper, csv=False):
     df['lemmas'] = df['tokens'].apply(lambda x: [lemmatiser.lemmatize(token) for token in x])
     print("lemmatised tokens.")
 
-    # all_tokens = [token for doc in df['lemmas'] for token in doc]
+    all_tokens = [token for doc in df['lemmas'] for token in doc]
     # Create a set to remove duplicates and get the vocabulary
-    # print(len(set(all_tokens)-set(playerlist)))
+    print(len(set(all_tokens)-set(playerlist)))
 
     print(f"number of tokens: {len(df['lemmas'].explode())}")
     df['lemmas'] = df['lemmas'].apply(lambda x: [token for token in x if token not in playerlist])
@@ -138,5 +138,5 @@ def preprocess(newspaper, csv=False):
         return df
 
 
-dataframe = preprocess("guardian", csv=True)
-print(dataframe)
+#dataframe = preprocess("mail")
+#print(dataframe)
