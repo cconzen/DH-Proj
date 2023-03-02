@@ -22,7 +22,7 @@ def preprocess(newspaper, csv=False):
         Parameters:
         -----------
         newspaper : str, default="sun"
-            Name of the newspaper to preprocess data for. Must be one of "times", "sun", or "guardian".
+            Name of the newspaper to preprocess data for. Must be one of "times", "sun", "mail" or "guardian".
         csv :  bool, default=False
             If True, saves the resulting DataFrame to a CSV file. Defaults to False.
         Raises:
@@ -40,7 +40,7 @@ def preprocess(newspaper, csv=False):
     if not isinstance(newspaper, str):
         raise ValueError('newspaper argument must be a string')
     newspaper = newspaper.lower()
-    if newspaper not in ["times", "sun", "guardian"]:
+    if newspaper not in ["times", "sun", "guardian", "mail"]:
         raise ValueError('newspaper argument must be one of "times", "sun", or "guardian"')
 
     if newspaper == "times":
@@ -55,38 +55,17 @@ def preprocess(newspaper, csv=False):
         print("transformed JSON to dataframe.")
         # content = df.loc[:, "content"]
 
+    elif newspaper == "mail":
+        print("starting preprocessing newspaper 'Dail Mail'.")
+        df = pd.read_json('mail_articles.json')
+        print("transformed JSON to dataframe.")
+        # content = df.loc[:, "content"]
+
     elif newspaper == "guardian":
         print("starting preprocessing newspaper 'The Guardian'.")
-        # for the guardian
-        # Create an empty list to store the contents of each JSON file
-        json_data = []
-        # Set the path to the directory containing the JSON files
-        path_to_json_files = "crawler/guardian_articles"
-        # Loop through each file in the directory
-        for filename in os.listdir(path_to_json_files):
-            if filename.endswith(".json"):
-                # Open the file and load its contents as a JSON object
-                with open(os.path.join(path_to_json_files, filename)) as f:
-                    data = json.load(f)
-                    # Append the contents to the list
-                    json_data.append(data["response"]["results"])
-
-        new_dict_list = []
-        for item in json_data:
-            for article in item:
-                new_dict = {
-                    "title": article["webTitle"],
-                    "date": article["webPublicationDate"],
-                    "content": article["fields"]["body"]
-                }
-                new_dict_list.append(new_dict)
-        # convert the list of dictionaries to a JSON string
-        # json_string = json.dumps(new_dict_list)
-
-        # print the JSON string
-        # print(json_string)
-        df = pd.DataFrame(new_dict_list)
+        df = pd.read_json('guardian_articles.json')
         print("transformed JSON to dataframe.")
+        # content = df.loc[:, "content"]
 
     else:
         raise ValueError('Input newspaper is not processable')
@@ -146,6 +125,7 @@ def preprocess(newspaper, csv=False):
     print(f"number of tokens: {len(df['lemmas'].explode())}")
     df['lemmas'] = [[token for token in doc if token not in rare_tokens] for doc in df['lemmas']]
     print("removed rare tokens.")
+
     # Remove rows where there are no tokens left
     df = df[df['lemmas'].map(len) > 0]
     print(f"number of tokens: {len(df['lemmas'].explode())}")
@@ -158,5 +138,5 @@ def preprocess(newspaper, csv=False):
         return df
 
 
-# dataframe = preprocess("times")
-# print(dataframe)
+dataframe = preprocess("guardian", csv=True)
+print(dataframe)
