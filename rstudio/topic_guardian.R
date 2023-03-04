@@ -5,9 +5,9 @@ require(topicmodels)
 require(readtext)
 
 
-textdata <- read.csv("./data/qatar/sun.csv", sep = ";", encoding = "UTF-8")
+textdata <- read.csv("./data/qatar/guardian.csv", sep = ";", encoding = "UTF-8")
 # sotu_corpus <- corpus(textdata$text, docnames = textdata$doc_id)
-sotu_corpus <- corpus(readtext("./data/qatar/times.csv", text_field = "content"))
+sotu_corpus <- corpus(readtext("./data/qatar/guardian.csv", text_field = "content"))
 
 # Build a dictionary of lemmas
 lemma_data <- read.csv("./resources/baseform_en.tsv", encoding = "UTF-8")
@@ -137,6 +137,7 @@ ggplot(data = vizDataFrame,
   facet_wrap(~ document, ncol = N)
 
 
+# 3 Topic distributions
 
 # see alpha from previous model
 attr(topicModel, "alpha")
@@ -213,7 +214,7 @@ sort(countsOfPrimaryTopics, decreasing = TRUE)
 # you can set this manually ...
 topicToFilter <- 6
 # ... or have it selected by a term in the topic name
-topicToFilter <- grep("mexico ", topicNames)[1]
+topicToFilter <- grep("qatar ", topicNames)[1]
 # minimum share of content must be attributed to the selected topic
 topicThreshold <- 0.1
 selectedDocumentIndexes <- (theta[, topicToFilter] >= topicThreshold)

@@ -5,7 +5,7 @@ require(topicmodels)
 require(readtext)
 
 
-textdata <- read.csv("./times.csv", sep = ";", encoding = "UTF-8")
+textdata <- read.csv("./data/qatar/times.csv", sep = ";", encoding = "UTF-8")
 # sotu_corpus <- corpus(textdata$text, docnames = textdata$doc_id)
 sotu_corpus <- corpus(readtext("./data/times.csv", text_field = "content"))
 
@@ -97,7 +97,7 @@ topicNames <- apply(top5termsPerTopic, 2, paste, collapse = " ")
 # visualize topics as word cloud
 topicToViz <- 11 # change for your own topic of interest
 # Or select a topic by a term contained in its name
-topicToViz <- grep("mexico", topicNames)[1]
+topicToViz <- grep("qatar", topicNames)[1]
 # select to 40 most probable terms from the topic by
 # sorting the term-topic-probability vector in decreasing
 # order
@@ -214,7 +214,7 @@ sort(countsOfPrimaryTopics, decreasing = TRUE)
 # you can set this manually ...
 topicToFilter <- 6
 # ... or have it selected by a term in the topic name
-topicToFilter <- grep("mexico ", topicNames)[1]
+topicToFilter <- grep("qatar ", topicNames)[1]
 # minimum share of content must be attributed to the selected topic
 topicThreshold <- 0.1
 selectedDocumentIndexes <- (theta[, topicToFilter] >= topicThreshold)
