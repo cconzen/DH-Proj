@@ -19,9 +19,13 @@ lemmas final | 225749 | 667615 |  1138170 | 301143
 
 Crawlers are written to scrape articles from September 2022 including February 2023.
 
-### The Sun, Daily Mail & The Times
+### The Sun, Daily Mail
 
 Selenium to preload pages + Scrapy to crawl and scrape
+
+### The Times
+
+Selenium to preload and login; Scrapy and Selenium to crawl and scrape
 
 start crawler in terminal with 
 
