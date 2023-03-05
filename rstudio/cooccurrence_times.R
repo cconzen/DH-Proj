@@ -4,7 +4,7 @@ require(readtext)
 
 # textdata <- read.csv("./csv files/times.csv", sep = ";", encoding = "UTF-8")
 
-sotu_corpus <- corpus(readtext("../times.csv", text_field = "content"))
+sotu_corpus <- corpus(readtext("./data/qatar/times.csv", text_field = "content"))
 
 # 1. Sentence detection
 
@@ -117,7 +117,7 @@ numberOfCoocs <- 15
 # Determination of the term of which co-competitors are to
 # be measured.
 
-coocTerm <- "california"
+coocTerm <- "qatar"
 
 coocs <- calculateCoocStatistics(coocTerm, binDTM, measure = "LOGLIK")
 
