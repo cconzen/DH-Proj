@@ -3,7 +3,7 @@ library(quanteda)
 require(readtext)
 
 
-sotu_corpus <- corpus(readtext("./data/sun.csv", text_field = "content"))
+sotu_corpus <- corpus(readtext("./data/qatar/sun.csv", text_field = "content"))
 
 # 1. Sentence detection
 
@@ -116,7 +116,7 @@ numberOfCoocs <- 15
 # Determination of the term of which co-competitors are to
 # be measured.
 
-coocTerm <- "california"
+coocTerm <- "qatar"
 
 coocs <- calculateCoocStatistics(coocTerm, binDTM, measure = "LOGLIK")
 
