@@ -117,7 +117,7 @@ numberOfCoocs <- 15
 # Determination of the term of which co-competitors are to
 # be measured.
 
-coocTerm <- "qatar"
+coocTerm <- "Qatar"
 
 coocs <- calculateCoocStatistics(coocTerm, binDTM, measure = "LOGLIK")
 
