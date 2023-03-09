@@ -7,6 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from matplotlib.dates import MonthLocator, DateFormatter
 
+
 def df_to_dtm(df):
     """
        Convert a pandas DataFrame of preprocessed text data (obtained using preprocessing() ) into a Document-Term Matrix
@@ -63,12 +64,12 @@ def df_to_tfidf(df):
 
 def csv_to_tfidf(file_path):
     """
-        Convert a pandas DataFrame of preprocessed text data (obtained using preprocessing() ) into a Term Frequency-Inverse
+        Convert a CSV file of preprocessed text data (obtained using preprocessing() ) into a Term Frequency-Inverse
         Document Frequency (TF-IDF) matrix using a CountVectorizer and a TfidfTransformer.
 
         Parameters:
-            df (pandas DataFrame): A DataFrame containing preprocessed text data, including a column named 'lemmatised_text'
-                                   containing the preprocessed text data as strings.
+            file_path (str): The path to the CSV file containing preprocessed text data, including a column named
+                             'lemmatised_text' containing the preprocessed text data as strings.
 
         Returns:
             pandas DataFrame: A DataFrame representation of the TF-IDF matrix with document IDs as the index and individual
@@ -85,12 +86,24 @@ def csv_to_tfidf(file_path):
     # Add the original text column back to the dataframe
     df_tfidf['content'] = df['content']
     # Limit the size of the dataframe to 100 rows and 100 columns
-    #df_tfidf = df_tfidf.iloc[:100, :500]
+    # df_tfidf = df_tfidf.iloc[:100, :500]
 
     return df_tfidf
 
 
 def get_term_position(df_tfidf, term):
+    """
+        Get the column index of a given term in a TF-IDF matrix represented by a pandas DataFrame.
+
+        Parameters:
+            df_tfidf (pandas DataFrame): A DataFrame representation of the TF-IDF matrix with document IDs as the index and
+                                         individual terms as columns. The cells of the DataFrame contain the TF-IDF scores
+                                         for each document.
+            term (str): The term whose column index is to be obtained.
+
+        Returns:
+            int: The column index of the given term in the TF-IDF matrix.
+    """
     # Get the column index of the term
     col_index = df_tfidf.columns.get_loc(term)
 
@@ -98,7 +111,16 @@ def get_term_position(df_tfidf, term):
 
 
 def compare_term_position(term):
+    """
+        Compare the positions of a given term in the TF-IDF matrices of four different CSV files and write the results to a
+        new CSV file.
 
+        Parameters:
+            term (str): The term whose position is to be compared.
+
+        Returns:
+            None
+        """
     guardian = csv_to_tfidf("guardian.csv").columns.get_loc(term)
     times = csv_to_tfidf("times.csv").columns.get_loc(term)
     sun = csv_to_tfidf("sun.csv").columns.get_loc(term)
@@ -109,20 +131,15 @@ def compare_term_position(term):
 
     return print(f"guardian, {guardian}, times, {times}, sun, {sun}, mail, {mail}")
 
-#dataframe = preprocess("sun")
-#print(dataframe)
-#dtm_dataframe = df_to_dtm(dataframe)
-#compare_term_position("qatar")
-#csv_to_tfidf("guardian.csv")
-
 
 def read_csv_files():
-    """Reads the CSV files for The Guardian, Daily Mail, The Times, and The Sun and returns them as dataframes.
+    """
+        Reads the CSV files for The Guardian, Daily Mail, The Times, and The Sun and returns them as dataframes.
 
-    Returns:
-        tuple: A tuple containing two elements:
-            1. A list of pandas dataframes, one for each CSV file.
-            2. A list of strings, one for each dataframe, representing the color to use when plotting that dataframe's data.
+        Returns:
+            tuple: A tuple containing two elements:
+                1. A list of pandas dataframes, one for each CSV file.
+                2. A list of strings, one for each dataframe, representing the color to use when plotting that dataframe's data.
     """
 
     filenames = ['guardian.csv', 'mail.csv', 'times.csv', 'sun.csv']
@@ -132,14 +149,15 @@ def read_csv_files():
 
 
 def plot_tfidf(term):
-    """Plots the development of the normalised TF-IDF score for a given term across the four newspapers.
+    """
+    Plots the development of the normalised TF-IDF score for a given term across the four newspapers.
 
-       Args:
-           term (str): The term for which to plot the TF-IDF score.
+   Args:
+       term (str): The term for which to plot the TF-IDF score.
 
-       Returns:
-           bool: True if the plot was created successfully, otherwise False.
-       """
+   Returns:
+       bool: True if the plot was created successfully, otherwise False.
+   """
     vectorizer = TfidfVectorizer()
     dataframes, colors = read_csv_files()
     # Create an empty dataframe to store the combined data from all dataframes
@@ -196,4 +214,11 @@ def plot_tfidf(term):
 
     return True
 
+
+####################################
+#dataframe = preprocess("sun")
+#print(dataframe)
+#dtm_dataframe = df_to_dtm(dataframe)
+#compare_term_position("qatar")
+#csv_to_tfidf("guardian.csv")
 plot_tfidf("gay")
