@@ -205,14 +205,115 @@ def plot_tfidf(term):
             ax.plot(group.index, group['tfidf'], label='The Guardian', color=color)
 
     # Add labels and title
-    ax.set_xlabel('Date')
+    ax.set_xlabel('Month')
     ax.set_ylabel('Normalised TF-IDF score')
-    ax.set_title('TF-IDF score development Sep 22 - Feb 23 for term "{}"'.format(term))
+    ax.set_title(f'TF-IDF score development Sep 22 - Feb 23 for term "{term}"')
     ax.legend()
     plt.show()
     plt.pause(0.001)
-
+    plt.savefig(f"{term}.jpg")
     return True
+
+
+def get_vocab_from_csv(csv_file, lemma_col='lemmas'):
+    """
+    Read a CSV file containing lemmas and return a set of unique lemmas.
+
+    Parameters
+    ----------
+    csv_file : str
+        The path to the CSV file to read.
+    lemma_col : str, optional
+        The name of the column in the CSV file containing the lemmas. Default is 'lemmas'.
+
+    Returns
+    -------
+    set of str
+        A set of unique lemmas from the specified column of the CSV file.
+
+    Raises
+    ------
+    ValueError
+        If the specified column does not exist in the CSV file.
+
+    FileNotFoundError
+        If the specified file does not exist or cannot be read.
+
+    Examples
+    --------
+    >>> vocab = get_vocab_from_csv('my_corpus.csv')
+    >>> print(vocab)
+    {'word1', 'word2', 'word3', ...}
+    """
+    try:
+        df = pd.read_csv(csv_file)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {csv_file}")
+
+    if lemma_col not in df.columns:
+        raise ValueError(f"Column '{lemma_col}' not found in CSV file.")
+
+    lemmas = df[lemma_col].apply(eval).explode().unique()
+    return set(lemmas)
+
+
+def get_avg_token_length(vocab):
+    """
+    Calculate the average length of tokens in a vocabulary.
+
+    Parameters
+    ----------
+    vocab : set of str
+        The set of strings representing the vocabulary.
+
+    Returns
+    -------
+    float or None
+        The average length of tokens in the vocabulary, or None if the input set is empty.
+
+    Raises
+    ------
+    TypeError
+        If the input vocabulary is not a set of strings.
+
+    Examples
+    --------
+    >>> vocab = {"hello", "world", "blue", "why", "a", "bee"}
+    >>> get_avg_token_length(vocab)
+    3.5
+    """
+    if not isinstance(vocab, set) or not all(isinstance(token, str) for token in vocab):
+        raise TypeError("The input vocabulary must be a set of strings.")
+
+    if not vocab:
+        return None
+
+    total_length = sum(len(token) for token in vocab)
+    average_length = total_length / len(vocab)
+
+    return average_length
+
+
+def jaccard_index():
+
+    # Define the four sets
+    A = get_vocab_from_csv("mail.csv")
+    B = get_vocab_from_csv("sun.csv")
+    C = get_vocab_from_csv("guardian.csv")
+    D = get_vocab_from_csv("times.csv")
+
+    # Compute the pairwise Jaccard index between all pairs of sets
+    pairs = [("A", "B"), ("A", "C"), ("A", "D"), ("B", "C"), ("B", "D"), ("C", "D")]
+    jaccard_indices = {}
+    for pair in pairs:
+        intersection = eval(pair[0]).intersection(eval(pair[1]))
+        union = eval(pair[0]).union(eval(pair[1]))
+        jaccard_index = len(intersection) / len(union)
+        jaccard_indices[pair] = jaccard_index
+
+    # Print the pairwise Jaccard indices for each pair of sets
+    for pair, jaccard_index in jaccard_indices.items():
+        print("Jaccard index for {} and {}: {}".format(pair[0], pair[1], jaccard_index))
 
 
 ####################################
@@ -221,4 +322,6 @@ def plot_tfidf(term):
 #dtm_dataframe = df_to_dtm(dataframe)
 #compare_term_position("qatar")
 #csv_to_tfidf("guardian.csv")
-plot_tfidf("gay")
+#plot_tfidf("sportswashing")
+#jaccard_index()
+#print(get_avg_token_length(get_vocab_from_csv("times_rare.csv")))
