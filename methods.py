@@ -148,16 +148,18 @@ def read_csv_files():
     return dataframes, colors
 
 
-def plot_tfidf(term):
+def plot_tfidf(term: str, save: bool = False) -> bool:
     """
-    Plots the development of the normalised TF-IDF score for a given term across the four newspapers.
+    Plots the development of the normalised TF-IDF score for a given term across four UK newspapers: The Times, Daily Mail,
+    The Sun, and The Guardian, for the period between September 2022 and February 2023.
 
-   Args:
-       term (str): The term for which to plot the TF-IDF score.
+    Args:
+        term (str): The term for which to plot the TF-IDF score.
+        save (bool, optional): Whether to save the plot as a JPEG image file. Defaults to False.
 
-   Returns:
-       bool: True if the plot was created successfully, otherwise False.
-   """
+    Returns:
+        bool: True if the plot was created successfully, otherwise False.
+    """
     vectorizer = TfidfVectorizer()
     dataframes, colors = read_csv_files()
     # Create an empty dataframe to store the combined data from all dataframes
@@ -209,9 +211,13 @@ def plot_tfidf(term):
     ax.set_ylabel('Normalised TF-IDF score')
     ax.set_title(f'TF-IDF score development Sep 22 - Feb 23 for term "{term}"')
     ax.legend()
+    if save == True:
+        plt.savefig(f"{term}.jpg")
+    else:
+        pass
     plt.show()
     plt.pause(0.001)
-    plt.savefig(f"{term}.jpg")
+
     return True
 
 
@@ -322,6 +328,6 @@ def jaccard_index():
 #dtm_dataframe = df_to_dtm(dataframe)
 #compare_term_position("qatar")
 #csv_to_tfidf("guardian.csv")
-#plot_tfidf("sportswashing")
+#plot_tfidf("lgbt", save=True)
 #jaccard_index()
 #print(get_avg_token_length(get_vocab_from_csv("times_rare.csv")))
