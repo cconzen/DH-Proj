@@ -1,30 +1,30 @@
 import nltk
-
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from string import punctuation
 import pandas as pd
-import os
-import json
 from collections import Counter
-
+# function which gets a list of all player names, used to remove them from the corpus
 from get_playernames import fetch_playerlist
 
 
-def preprocess(newspaper, csv=False):
+def preprocess(newspaper: str, csv: bool = False, rare: bool = False):
     """
-        Preprocesses text data from JSON files for three different newspapers (The Times, The Sun, and The Guardian),
-        including tokenisation, removal of stopwords, punctuation rare tokens and player names, part-of-speech tagging,
+        Preprocesses text data from JSON files for four different newspapers (The Times, The Sun, Daily Mail and The Guardian),
+        including tokenisation, removal of stopwords, punctuation, rare tokens and player names, part-of-speech tagging,
         and lemmatisation.
-        Returns a Pandas DataFrame containing the preprocessed data.
+        Returns a Pandas DataFrame containing the preprocessed data or creates a csv file depending on csv bool.
 
         Parameters:
         -----------
-        newspaper : str, default="sun"
-            Name of the newspaper to preprocess data for. Must be one of "times", "sun", "mail" or "guardian".
-        csv :  bool, default=False
-            If True, saves the resulting DataFrame to a CSV file. Defaults to False.
+        newspaper : str
+        Name of the newspaper to preprocess data for. Must be one of "times", "sun", "mail" or "guardian".
+        csv : bool, optional
+        If True, saves the resulting DataFrame to a CSV file. Defaults to False.
+        rare : bool, optional
+        If True, rare tokens are not removed from the preprocessed text. Defaults to False.
+
         Raises:
         -------
         ValueError:
@@ -56,7 +56,7 @@ def preprocess(newspaper, csv=False):
         # content = df.loc[:, "content"]
 
     elif newspaper == "mail":
-        print("starting preprocessing newspaper 'Dail Mail'.")
+        print("starting preprocessing newspaper 'Daily Mail'.")
         df = pd.read_json('mail_articles.json')
         print("transformed JSON to dataframe.")
         # content = df.loc[:, "content"]
@@ -71,7 +71,8 @@ def preprocess(newspaper, csv=False):
         raise ValueError('Input newspaper is not processable')
 
     playerlist = fetch_playerlist()
-
+    if 'author' in df.columns:
+        df = df.drop('author', axis=1)
     # preprocessing starts here
     df['sentences'] = df['content'].apply(lambda x: nltk.sent_tokenize(x))
     print("tokenised into sentences.")
@@ -114,29 +115,37 @@ def preprocess(newspaper, csv=False):
     df['lemmatised_text'] = df['lemmas'].apply(lambda x: ' '.join(x))
     print("rejoined text with lemmas.")
 
-    # Get a list of all tokens
-    all_tokens = [token for doc in df['lemmas'] for token in doc]
-    # Create a Counter object to count the frequency of each token
-    token_counts = Counter(all_tokens)
-    # Get a list of tokens that appear less than 10 times
-    rare_tokens = [token for token, count in token_counts.items() if count < 10]
-    print(f"number of tokens appearing less than ten times: {len(rare_tokens)}")
-    # Filter out rare tokens
-    print(f"number of tokens: {len(df['lemmas'].explode())}")
-    df['lemmas'] = [[token for token in doc if token not in rare_tokens] for doc in df['lemmas']]
-    print("removed rare tokens.")
+    if rare:
+        print("rare tokens not removed as rare == TRUE")
+    else:
+        # Get a list of all tokens
+        all_tokens = [token for doc in df['lemmas'] for token in doc]
+        # Create a Counter object to count the frequency of each token
+        token_counts = Counter(all_tokens)
+        # Get a list of tokens that appear less than 10 times
+        rare_tokens = [token for token, count in token_counts.items() if count < 10]
+        print(f"number of tokens appearing less than ten times: {len(rare_tokens)}")
+        # Filter out rare tokens
+        print(f"number of tokens: {len(df['lemmas'].explode())}")
+        df['lemmas'] = [[token for token in doc if token not in rare_tokens] for doc in df['lemmas']]
+        print("removed rare tokens.")
 
     # Remove rows where there are no tokens left
     df = df[df['lemmas'].map(len) > 0]
     print(f"number of tokens: {len(df['lemmas'].explode())}")
 
     if csv == True:
-        df.to_csv(f'{newspaper}.csv', index=False)
+        if rare == True:
+            name = f'{newspaper}_rare.csv'
+            df.to_csv(name, index=False)
+        else:
+            name = f'{newspaper}.csv'
+            df.to_csv(name, index=False)
 
-        return print(f"Created file '{newspaper}.csv'.")
+        return print(f"Created file '{name}'.")
     else:
         return df
 
 
-#dataframe = preprocess("mail")
+#dataframe = preprocess("sun",csv=True, rare=True)
 #print(dataframe)
