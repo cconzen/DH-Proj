@@ -101,7 +101,18 @@ get_avg_token_length(times_vocab)
 
 ## Analysis
 
-vocabulary comparison
+### Type-token ratio 
+Newspaper | The Sun | Daily Mail | The Guardian | The Times
+--- | --- | --- | --- | ---
+ types | 17499 | 24781 | 39283 | 22586 
+ tokens | 271541 | 754718 | 1273947 | 362093 
+ type-token ratio | 0,06444 | 0,03283 | 0,03083 | 0,06238 
+ 
+ ### Average token length
+Newspaper | The Sun | Daily Mail | The Guardian | The Times
+--- | --- | --- | --- | ---
+average token length | 7.11898 | 7.32034 | 7.44423 | 7.43956 
+
 
 Topic modelling
 
@@ -111,11 +122,6 @@ in rStudio
 
 ## Visualisation
 
-time series
-
-grouping of sentiments 
-
-heatmaps 
 
 
 
