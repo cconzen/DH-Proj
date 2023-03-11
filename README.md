@@ -41,7 +41,7 @@ run script in .py file
 
 ## Functions
 
-most functions can be found in preprocessing.py and methods.py
+most functions can be found in <b>preprocessing.py</b> and <b>methods.py</b>
 
 ### preprocessing.py
 #### def preprocess(newspaper, csv=False, rare=False)
