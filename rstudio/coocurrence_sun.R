@@ -3,7 +3,7 @@ library(quanteda)
 require(readtext)
 
 
-sotu_corpus <- corpus(readtext("./data/qatar/sun.csv", text_field = "content"))
+sotu_corpus <- corpus(readtext("./data/qatar/sun.csv", text_field = "lemmatised_text"))
 
 # 1. Sentence detection
 
@@ -60,7 +60,7 @@ as.matrix(coocCounts[202:205, 202:205])
 
 # 3 Statistical significance
 
-coocTerm <- "qatar"
+coocTerm <- "migrant_worker"
 k <- nrow(binDTM)
 ki <- sum(binDTM[, coocTerm])
 kj <- colSums(binDTM)
@@ -116,7 +116,7 @@ numberOfCoocs <- 15
 # Determination of the term of which co-competitors are to
 # be measured.
 
-coocTerm <- "qatar"
+coocTerm <- "migrant_worker"
 
 coocs <- calculateCoocStatistics(coocTerm, binDTM, measure = "LOGLIK")
 

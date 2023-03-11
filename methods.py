@@ -112,6 +112,6 @@ def compare_term_position(term):
 #dataframe = preprocess("sun")
 #print(dataframe)
 #dtm_dataframe = df_to_dtm(dataframe)
-#compare_term_position("qatar")
+compare_term_position("qatar")
 #csv_to_tfidf("guardian.csv")
 

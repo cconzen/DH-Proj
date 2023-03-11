@@ -138,5 +138,5 @@ def preprocess(newspaper, csv=False):
         return df
 
 
-#dataframe = preprocess("mail")
-#print(dataframe)
+# dataframe = preprocess("mail")
+# print(dataframe)

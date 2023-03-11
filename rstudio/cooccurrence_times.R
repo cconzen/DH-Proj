@@ -4,7 +4,10 @@ require(readtext)
 
 # textdata <- read.csv("./csv files/times.csv", sep = ";", encoding = "UTF-8")
 
-sotu_corpus <- corpus(readtext("./data/qatar/times.csv", text_field = "content"))
+#sotu_corpus <- corpus(readtext("./data/qatar/times.csv", text_field = "content"))
+#sotu_corpus <- corpus(readtext("./data/qatar/guardian.csv", text_field = "content"))
+#sotu_corpus <- corpus(readtext("./data/qatar/mail.csv", text_field = "content"))
+sotu_corpus <- corpus(readtext("./data/qatar/sun.csv", text_field = "content"))
 
 # 1. Sentence detection
 
