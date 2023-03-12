@@ -5,9 +5,18 @@ require(topicmodels)
 require(readtext)
 
 
-textdata <- read.csv("./data/qatar/sun.csv", sep = ";", encoding = "UTF-8")
-# sotu_corpus <- corpus(textdata$text, docnames = textdata$doc_id)
-sotu_corpus <- corpus(readtext("./data/qatar/times.csv", text_field = "content"))
+#textdata <- read.csv("./data/qatar/sun.csv", encoding = "UTF-8")
+#textdata <- read.csv("./data/qatar/mail.csv", encoding = "UTF-8")
+#textdata <- read.csv("./data/qatar/times.csv", encoding = "UTF-8")
+textdata <- read.csv("./data/qatar/guardian.csv", encoding = "UTF-8")
+
+#sotu_corpus <- corpus(textdata$text, docnames = textdata$doc_id)
+
+#sotu_corpus <- corpus(readtext("./data/qatar/sun.csv", text_field = "lemmatised_text"))
+#sotu_corpus <- corpus(readtext("./data/qatar/mail.csv", text_field = "lemmatised_text"))
+#sotu_corpus <- corpus(readtext("./data/qatar/times.csv", text_field = "lemmatised_text"))
+sotu_corpus <- corpus(readtext("./data/qatar/guardian.csv", text_field = "lemmatised_text"))
+
 
 # Build a dictionary of lemmas
 lemma_data <- read.csv("./resources/baseform_en.tsv", encoding = "UTF-8")
@@ -21,6 +30,7 @@ corpus_tokens <- sotu_corpus %>%
   tokens_replace(lemma_data$inflected_form, lemma_data$lemma,
                  valuetype = "fixed") %>%
   tokens_remove(pattern = stopwords_extended, padding = T)
+
 sotu_collocations <- quanteda.textstats::textstat_collocations(corpus_tokens,
                                                                min_count = 25)
 sotu_collocations <- sotu_collocations[1:250, ]
@@ -39,8 +49,8 @@ DTM <- corpus_tokens %>%
 # matrix
 dim(DTM)
 
-top10_terms <- c("qatar", "world", "cup", "corruption",
-                 "government", "fifa", "migrant", "champion", "saudi", "arabia")
+top10_terms <- c("world", "cup", "football", "qatar",
+                 "fifa", "tournament", "final", "team", "england", "ball")
 DTM <- DTM[, !(colnames(DTM) %in% top10_terms)]
 # due to vocabulary pruning, we have empty rows in our DTM
 # LDA does not like this. So we remove those docs from the
@@ -97,7 +107,7 @@ topicNames <- apply(top5termsPerTopic, 2, paste, collapse = " ")
 # visualize topics as word cloud
 topicToViz <- 11 # change for your own topic of interest
 # Or select a topic by a term contained in its name
-topicToViz <- grep("qatar", topicNames)[1]
+topicToViz <- grep("mexico", topicNames)[1]
 # select to 40 most probable terms from the topic by
 # sorting the term-topic-probability vector in decreasing
 # order
@@ -137,6 +147,7 @@ ggplot(data = vizDataFrame,
   facet_wrap(~ document, ncol = N)
 
 
+# 3 Topic distributions
 
 # see alpha from previous model
 attr(topicModel, "alpha")
@@ -225,21 +236,33 @@ filteredCorpus
 # 6 Topic proportions over time
 
 # append decade information for aggregation
-textdata$decade <- paste0(substr(textdata$date, 0, 3), "0")
+
+
+
+textdata$date <- as.Date(textdata$date, format = "%Y-%m-%d")
+
+# we add some more metadata columns to the data frame
+
+textdata$month <- substr(textdata$date, 4, 5)
+textdata$month <- format(as.Date(textdata$date, "%d.%m.%Y"), "%m")
+
+textdata$month <- as.numeric(format(textdata$date, "%m"))
+
+str(textdata$month)
 # get mean topic proportions per decade
-topic_proportion_per_decade <- aggregate(theta,
-                                         by = list(decade = textdata$decade), mean)
+topic_proportion_per_month <- aggregate(theta,
+                                         by = list(month = textdata$month), mean)
 # set topic names to aggregated columns
-colnames(topic_proportion_per_decade)[2:(K+1)] <- topicNames
+colnames(topic_proportion_per_month)[2:(K+1)] <- topicNames
 # reshape data frame
-vizDataFrame <- melt(topic_proportion_per_decade, id.vars = "decade")
+vizDataFrame <- melt(topic_proportion_per_month, id.vars = "month")
 # plot topic proportions per deacde as bar plot
 require(pals)
 
 
 ggplot(vizDataFrame,
-       aes(x=decade, y=value, fill=variable)) +
+       aes(x=month, y=value, fill=variable)) +
   geom_bar(stat = "identity") + ylab("proportion") +
-  scale_fill_manual(values = paste0(c(alphabet(30),"#00FF00", "#FF0000", "#0000FF", "#999999"),"FF"), name = "decade") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  scale_fill_manual(values = paste0(c(alphabet(30),"#00FF00", "#FF0000", "#0000FF", "#999999"),"FF"), name = "Topics in the Mail") +
+  theme(axis.text.x = element_text(angle = 50, hjust = 1))
 
