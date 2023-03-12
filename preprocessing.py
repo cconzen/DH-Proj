@@ -40,8 +40,8 @@ def preprocess(newspaper: str, csv: bool = False, rare: bool = False):
     if not isinstance(newspaper, str):
         raise ValueError('newspaper argument must be a string')
     newspaper = newspaper.lower()
-    if newspaper not in ["times", "sun", "guardian", "mail"]:
-        raise ValueError('newspaper argument must be one of "times", "sun", or "guardian"')
+    if newspaper not in ["times", "sun", "guardian", "mail", "dailymail"]:
+        raise ValueError('newspaper argument must be one of "times", "sun", or "guardian", "mail" or "dailymail".')
 
     if newspaper == "times":
         print("starting preprocessing newspaper 'The Times'.")
@@ -55,7 +55,7 @@ def preprocess(newspaper: str, csv: bool = False, rare: bool = False):
         print("transformed JSON to dataframe.")
         # content = df.loc[:, "content"]
 
-    elif newspaper == "mail":
+    elif newspaper == "mail" or newspaper == "dailymail":
         print("starting preprocessing newspaper 'Daily Mail'.")
         df = pd.read_json('mail_articles.json')
         print("transformed JSON to dataframe.")
@@ -104,7 +104,7 @@ def preprocess(newspaper: str, csv: bool = False, rare: bool = False):
 
     all_tokens = [token for doc in df['lemmas'] for token in doc]
     # Create a set to remove duplicates and get the vocabulary
-    print(len(set(all_tokens)-set(playerlist)))
+    print(f"Vocabulary without stopwords and player names: {len(set(all_tokens)-set(playerlist))}")
 
     print(f"number of tokens: {len(df['lemmas'].explode())}")
     df['lemmas'] = df['lemmas'].apply(lambda x: [token for token in x if token not in playerlist])
@@ -145,7 +145,3 @@ def preprocess(newspaper: str, csv: bool = False, rare: bool = False):
         return print(f"Created file '{name}'.")
     else:
         return df
-
-
-#dataframe = preprocess("sun",csv=True, rare=True)
-#print(dataframe)

@@ -39,7 +39,7 @@ show_fields = "body"
 
 json_list = []
 
-# iterating 15 times, 200 articles per page
+# iterating 10 times, 200 articles per page
 for page_number in range(1, 11):
     final_url = f"{base_url}search?page-size={page_size}&page={page_number}" \
                 f"&from-date={from_date}&to-date={to_date}&q={query}&show-fields={show_fields}&api-key={api_key}"

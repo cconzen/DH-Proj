@@ -320,14 +320,3 @@ def jaccard_index():
     # Print the pairwise Jaccard indices for each pair of sets
     for pair, jaccard_index in jaccard_indices.items():
         print("Jaccard index for {} and {}: {}".format(pair[0], pair[1], jaccard_index))
-
-
-####################################
-#dataframe = preprocess("sun")
-#print(dataframe)
-#dtm_dataframe = df_to_dtm(dataframe)
-#compare_term_position("qatar")
-#csv_to_tfidf("guardian.csv")
-#plot_tfidf("lgbt", save=True)
-#jaccard_index()
-#print(get_avg_token_length(get_vocab_from_csv("times_rare.csv")))
