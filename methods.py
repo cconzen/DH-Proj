@@ -91,47 +91,6 @@ def csv_to_tfidf(file_path):
     return df_tfidf
 
 
-def get_term_position(df_tfidf, term):
-    """
-        Get the column index of a given term in a TF-IDF matrix represented by a pandas DataFrame.
-
-        Parameters:
-            df_tfidf (pandas DataFrame): A DataFrame representation of the TF-IDF matrix with document IDs as the index and
-                                         individual terms as columns. The cells of the DataFrame contain the TF-IDF scores
-                                         for each document.
-            term (str): The term whose column index is to be obtained.
-
-        Returns:
-            int: The column index of the given term in the TF-IDF matrix.
-    """
-    # Get the column index of the term
-    col_index = df_tfidf.columns.get_loc(term)
-
-    return col_index
-
-
-def compare_term_position(term):
-    """
-        Compare the positions of a given term in the TF-IDF matrices of four different CSV files and write the results to a
-        new CSV file.
-
-        Parameters:
-            term (str): The term whose position is to be compared.
-
-        Returns:
-            None
-        """
-    guardian = csv_to_tfidf("guardian.csv").columns.get_loc(term)
-    times = csv_to_tfidf("times.csv").columns.get_loc(term)
-    sun = csv_to_tfidf("sun.csv").columns.get_loc(term)
-    mail = csv_to_tfidf("mail.csv").columns.get_loc(term)
-
-    with io.open(f"{term}compare.csv", "w", encoding="utf8") as file:
-        file.write(f"guardian, {guardian}, times, {times}, sun, {sun}, mail, {mail}")
-
-    return print(f"guardian, {guardian}, times, {times}, sun, {sun}, mail, {mail}")
-
-
 def read_csv_files():
     """
         Reads the CSV files for The Guardian, Daily Mail, The Times, and The Sun and returns them as dataframes.
@@ -300,24 +259,43 @@ def get_avg_token_length(vocab):
     return average_length
 
 
-def jaccard_index():
+def get_term_position(df_tfidf, term):
+    """
+        Get the column index of a given term in a TF-IDF matrix represented by a pandas DataFrame.
 
-    # Define the four sets
-    A = get_vocab_from_csv("mail.csv")
-    B = get_vocab_from_csv("sun.csv")
-    C = get_vocab_from_csv("guardian.csv")
-    D = get_vocab_from_csv("times.csv")
+        Parameters:
+            df_tfidf (pandas DataFrame): A DataFrame representation of the TF-IDF matrix with document IDs as the index and
+                                         individual terms as columns. The cells of the DataFrame contain the TF-IDF scores
+                                         for each document.
+            term (str): The term whose column index is to be obtained.
 
-    # Compute the pairwise Jaccard index between all pairs of sets
-    pairs = [("A", "B"), ("A", "C"), ("A", "D"), ("B", "C"), ("B", "D"), ("C", "D")]
-    jaccard_indices = {}
-    for pair in pairs:
-        intersection = eval(pair[0]).intersection(eval(pair[1]))
-        union = eval(pair[0]).union(eval(pair[1]))
-        jaccard_index = len(intersection) / len(union)
-        jaccard_indices[pair] = jaccard_index
+        Returns:
+            int: The column index of the given term in the TF-IDF matrix.
+    """
+    # Get the column index of the term
+    col_index = df_tfidf.columns.get_loc(term)
 
-    # Print the pairwise Jaccard indices for each pair of sets
-    for pair, jaccard_index in jaccard_indices.items():
-        print("Jaccard index for {} and {}: {}".format(pair[0], pair[1], jaccard_index))
+    return col_index
+
+
+def compare_term_position(term):
+    """
+        Compare the positions of a given term in the TF-IDF matrices of four different CSV files and write the results to a
+        new CSV file.
+
+        Parameters:
+            term (str): The term whose position is to be compared.
+
+        Returns:
+            None
+        """
+    guardian = csv_to_tfidf("guardian.csv").columns.get_loc(term)
+    times = csv_to_tfidf("times.csv").columns.get_loc(term)
+    sun = csv_to_tfidf("sun.csv").columns.get_loc(term)
+    mail = csv_to_tfidf("mail.csv").columns.get_loc(term)
+
+    with io.open(f"{term}compare.csv", "w", encoding="utf8") as file:
+        file.write(f"guardian, {guardian}, times, {times}, sun, {sun}, mail, {mail}")
+
+    return print(f"guardian, {guardian}, times, {times}, sun, {sun}, mail, {mail}")
 
