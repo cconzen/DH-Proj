@@ -263,6 +263,6 @@ require(pals)
 ggplot(vizDataFrame,
        aes(x=month, y=value, fill=variable)) +
   geom_bar(stat = "identity") + ylab("proportion") +
-  scale_fill_manual(values = paste0(c(alphabet(30),"#00FF00", "#FF0000", "#0000FF", "#999999"),"FF"), name = "Topics in the Mail") +
+  scale_fill_manual(values = paste0(c(alphabet(30),"#00FF00", "#FF0000", "#0000FF", "#999999"),"FF"), name = "Topics in the Guardian") +
   theme(axis.text.x = element_text(angle = 50, hjust = 1))
 

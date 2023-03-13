@@ -70,7 +70,7 @@ counts_per_month <- aggregate(DTM_reduced, by = list(month = textdata$month),
 months <- counts_per_month$month
 frequencies <- counts_per_month[, terms_to_observe]
 # plot multiple frequencies
-matplot(months, frequencies, type = "l")
+matplot(months, frequencies, type = "l", main = "Timeseries of 'The Guardian'")
 # add legend to the plot
 l <- length(terms_to_observe)
 
