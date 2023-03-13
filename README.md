@@ -114,13 +114,16 @@ Newspaper | The Sun | Daily Mail | The Guardian | The Times
 average token length | 7.11898 | 7.32034 | 7.44423 | 7.43956 
 
 
-Topic modelling
+### Topic modelling
+Reads CSV and calculates the Topics for each newspaper.
 
-cooccurrence measures
+### Cooccurrence measures
+Show the terms that frequently occur together and the structure of the data
 
-in rStudio
+### Time series
+Calculates the data and analyzed it overtime.
 
-## Visualisation
+
 
 
 
