@@ -18,12 +18,12 @@ textdata <- read.csv("./data/qatar/guardian.csv", encoding = "UTF-8")
 sotu_corpus <- corpus(readtext("./data/qatar/guardian.csv", text_field = "lemmatised_text"))
 
 
-# Build a dictionary of lemmas
+# bilde lemmas, schon gebildet worden in csv
 lemma_data <- read.csv("./resources/baseform_en.tsv", encoding = "UTF-8")
 # extended stopword list
 stopwords_extended <- readLines("./resources/stopwords_en.txt",
                                 encoding = "UTF-8")
-# Create a DTM (may take a while)
+# bilde DTM (may take a while)
 corpus_tokens <- sotu_corpus %>%
   tokens(remove_punct = TRUE, remove_numbers = TRUE, remove_symbols = TRUE) %>%
   tokens_tolower() %>%
@@ -49,8 +49,10 @@ DTM <- corpus_tokens %>%
 # matrix
 dim(DTM)
 
+#häufige Terme
 top10_terms <- c("world", "cup", "football", "qatar",
                  "fifa", "tournament", "final", "team", "england", "ball")
+
 DTM <- DTM[, !(colnames(DTM) %in% top10_terms)]
 # due to vocabulary pruning, we have empty rows in our DTM
 # LDA does not like this. So we remove those docs from the
