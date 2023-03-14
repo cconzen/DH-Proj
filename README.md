@@ -116,14 +116,17 @@ average token length | 7.11898 | 7.32034 | 7.44423 | 7.43956
 
 ### Topic modelling
 Reads CSV and calculates the Topics for each newspaper.
+
 topics.R
 
 ### Cooccurrence measures
-Show the terms that frequently occur together and the structure of the data
+Show the terms that frequently occur together and the structure of the data.
+
 cooccurrence.R
 
 ### Time series
 Calculates the data and analyzed it overtime.
+
 timeseries.R
 
 
