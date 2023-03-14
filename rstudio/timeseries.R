@@ -4,6 +4,7 @@
 options(stringsAsFactors = FALSE)
 require(quanteda)
 library(dplyr)
+library(lubridate)
 require(readtext)
 
 #textdata <- read.csv("./data/qatar/sun.csv", encoding = "UTF-8")
@@ -11,10 +12,10 @@ require(readtext)
 textdata <- read.csv("./data/qatar/guardian.csv", encoding = "UTF-8")
 #textdata <- read.csv("./data/qatar/times.csv", encoding = "UTF-8")
 
-
+# extrahieren Datum Spalte
 textdata$date <- as.Date(textdata$date, format = "%Y-%m-%d")
 
-# we add some more metadata columns to the data frame
+# metadaten als Spalten hinzufügen, in Monaten
 
 textdata$month <- substr(textdata$date, 4, 5)
 textdata$month <- format(as.Date(textdata$date, "%d.%m.%Y"), "%m")
@@ -23,12 +24,9 @@ textdata$month <- as.numeric(format(textdata$date, "%m"))
 
 str(textdata$month)
 
-library(lubridate)
-
 textdata$month <- as.factor(textdata$month)
 
-
-length(textdata$month)
+# length(textdata$month)
 
 
 #sotu_corpus <- corpus(readtext("./data/qatar/sun.csv", text_field = "lemmatised_text"))
@@ -55,8 +53,8 @@ DTM <- corpus_tokens %>%
   dfm()
 dim(DTM)
 
+# kontroverse Terme
 terms_to_observe <- c("alcohol", "armband", "boycott", "bribery", "climate", "controversy","corruption", "discrimination", "gay", "iran", "lesbian", "lgbt", "migrant", "protest", "russia", "sportswashing")
-
 
 head(terms_to_observe)
 
